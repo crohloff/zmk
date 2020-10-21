@@ -163,7 +163,6 @@ static void zmk_rgb_underglow_tick(struct k_work *work) {
         zmk_rgb_underglow_effect_swirl();
         break;
     }
-
     led_strip_update_rgb(led_strip, pixels, STRIP_NUM_PIXELS);
 }
 
@@ -423,6 +422,19 @@ int zmk_rgb_underglow_change_spd(int direction) {
     }
 
     return zmk_rgb_underglow_save_state();
+}
+
+int zmk_rgb_underglow_effect_single_led(int hue, int sat, int brt, int led) {
+    if (!led_strip) {
+        return -ENODEV;
+    }
+
+    struct led_hsb hsb = {hue, sat, brt};
+
+    pixels[led] = hsb_to_rgb(hsb);
+    led_strip_update_rgb(led_strip, pixels, STRIP_NUM_PIXELS);
+
+    return 0;
 }
 
 SYS_INIT(zmk_rgb_underglow_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
