@@ -530,7 +530,7 @@ static struct bt_conn_auth_cb zmk_ble_auth_cb_display = {
     .pairing_accept = auth_pairing_accept,
 #endif /* IS_HOST_PERIPHERAL */
     .pairing_complete = auth_pairing_complete,
-// .passkey_display = auth_passkey_display,
+//   .passkey_display = auth_passkey_display,
 
 #ifdef CONFIG_ZMK_BLE_PASSKEY_ENTRY
     .passkey_entry = auth_passkey_entry,
@@ -638,6 +638,18 @@ bool zmk_ble_handle_key_user(struct zmk_key_event *key_event) {
     }
 
     return false;
+}
+
+int zmk_ble_start_advertisement(void) {
+    int err = 0;
+    CHECKED_OPEN_ADV();
+    return err;
+}
+
+int zmk_ble_stop_advertisement(void) {
+    int err = 0;
+    CHECKED_ADV_STOP();
+    return err;
 }
 
 SYS_INIT(zmk_ble_init, APPLICATION, CONFIG_ZMK_BLE_INIT_PRIORITY);

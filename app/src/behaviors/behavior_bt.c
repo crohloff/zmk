@@ -16,6 +16,27 @@
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #include <zmk/ble.h>
+#include <zmk/rgb_underglow.h>
+
+static bool adv = true;
+
+static int zmk_ble_toggle_adv(void) {
+    int err;
+
+    adv = !adv;
+
+    if (adv) {
+        err = zmk_ble_start_advertisement();
+        LOG_ERR("Start ADV again");
+        zmk_rgb_underglow_effect_single_led(0, 100, 10, 17);
+    } else {
+        err = zmk_ble_stop_advertisement();
+        LOG_ERR("Stop ADV");
+        zmk_rgb_underglow_off();
+    }
+
+    return err;
+}
 
 #if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
 
@@ -30,6 +51,8 @@ static int on_keymap_binding_pressed(struct zmk_behavior_binding *binding,
         return zmk_ble_prof_prev();
     case BT_SEL_CMD:
         return zmk_ble_prof_select(binding->param2);
+    case BT_TGL_CMD:
+        return zmk_ble_toggle_adv();
     default:
         LOG_ERR("Unknown BT command: %d", binding->param1);
     }
